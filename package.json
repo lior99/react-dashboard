@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "material-ui": "^0.20.0",
+    "react-circular-progressbar": "^0.5.0",
     "styled-components": "^2.2.4"
   }
 }

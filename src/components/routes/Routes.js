@@ -1,8 +1,9 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import Dashboard from './Dashboard';
-import LoginForm from './login/LoginForm';
-import { isLoggedIn } from '../utils';
+import Dashboard from '../Dashboard';
+import LoginForm from '../login/LoginForm';
+import { isLoggedIn } from '../../utils';
+import NoMatch from './NoMatch';
 
 const AuthRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={(props) => (
@@ -18,9 +19,7 @@ const Routes = () => (
         <AuthRoute exact={true} path="/" component={Dashboard} />
         <Route exact={true} path="/login" component={LoginForm} /> 
         <Route exact={true} path="/dashboard" component={Dashboard} />
-        <Route path="*" render={() => {
-            <Redirect to="/login" />
-        }} /> 
+        <Route path="*" component={NoMatch} />
     </Switch>
 )
 

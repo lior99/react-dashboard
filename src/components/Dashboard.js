@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 import { isLoggedIn } from '../utils';
 import { Redirect } from 'react-router-dom';
-
+import CircularProgressContainer from './CircularProgressContainer';
 
 class Dashboard extends Component {
     constructor() {
@@ -23,7 +23,7 @@ class Dashboard extends Component {
         return (
             <div>
                 <Header />
-                <div>Content goes here</div>
+                <CircularProgressContainer />
             </div>
         );
     }

@@ -1,28 +1,35 @@
-.App {
-  text-align: center;
+.circular-container {
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: space-between;
+  width: 400px;
+  padding: 10px;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+
+/** Circular progress bar **/
+
+.CircularProgressbar {
+  width: 200px;
+  height: 100px;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.CircularProgressbar .CircularProgressbar-trail {
+  stroke: #d6d6d6;
 }
 
-.App-title {
-  font-size: 1.5em;
+.CircularProgressbar .CircularProgressbar-path {
+  stroke: lightskyblue;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease 0s;
 }
 
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.CircularProgressbar .CircularProgressbar-text {
+  fill: #3e98c7;
+  font-size: 20px;
+  dominant-baseline: middle;
+  text-anchor: middle;
 }
