@@ -3,7 +3,8 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
-import { isLoggedIn } from '../../utils'
+import 'whatwg-fetch';
+import { isLoggedIn } from '../../utils';
 
 const ErrorMessage = styled.div`
     margin-top: 10px;
@@ -23,134 +24,126 @@ const FormContainer = styled.form`
 `;
 
 class LoginForm extends React.Component {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.submit = this.submit.bind(this);
-        this.checkCredentials = this.checkCredentials.bind(this);
+    this.submit = this.submit.bind(this);
+    this.checkCredentials = this.checkCredentials.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
 
-        this.state = {
-            userName: '',
-            password: '',
-            hasError: false,
-            success: false
-        }
+    this.state = {
+      userName: '',
+      password: '',
+      hasError: false,
+    }
+  }
+
+  onChange(event) {
+    const { name, value } = event.target;
+    this.setState({
+      [name]: value,
+      hasError: false
+    })
+  }
+
+  async submit(event) {
+    event.preventDefault();
+    const { userName, password } = this.state;
+    const isValid = await this.checkCredentials(userName, password);
+    if (!isValid) {
+      this.setState({
+        hasError: true
+      });
+    } else {
+      window.localStorage.setItem('token', '123');
+
+      this.setState({
+        hasError: false,
+      })
+    }
+  }
+
+  async checkCredentials(userName, password) {
+    let url = '';
+
+    // if debugging mode than set to local url
+    const debug = true;
+    if (debug) {
+      url = 'http://localhost:777/credentials'
+    } else {
+      url = '';
     }
 
-    async submit(event) {
-        event.preventDefault();
-        const { userName, password } = this.state;
-       
-        const isValid = await this.checkCredentials(userName, password);
-        if (!isValid){
-            this.setState({
-                hasError: true
-            });
-        }
-        else {
-            localStorage.setItem('token', '123');
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
-            this.setState({
-                hasError: false,
-                success: true
-            })
-        }
+    const params = `user=${userName}&password=${password}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      // mode: 'cors',
+      headers,
+      body: params
+    })
+
+    if (!response.ok) {
+      // console.error('response not ok from server');
+      return false;
     }
 
-    async checkCredentials(userName, password) {
-        let url = '';
+    const result = await response.json();
+    return !result.hasError;
+  }
 
-        // if debugging mode than set to local url
-        let debug = true;
-        if (debug) {
-            url = 'http://localhost:777/credentials'
-        }
-        else {
-            url = '';
-        }
+  handleKeyPress(event) {
+    if (event.which === 13) {
+      this.submit(event);
+    }
+  }
 
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+  render() {
+    const { hasError } = this.state;
 
-        const params = `user=${userName}&password=${password}`;
-
-        const response = await fetch(url, {
-            method: 'POST',
-            // mode: 'cors',
-            headers,
-            body: params
-        })
-
-        if (response.ok)  {            
-            const result = await response.json();
-            const { hasError, isValid } = result;
-
-            return !hasError;
-        }
-        else {
-            console.error('response not ok from server');
-            return false;
-        }
-
+    if (isLoggedIn()) {
+      return <Redirect from="/login" to="/dashboard" />
     }
 
-    onChange(event) {
-        const name = event.target.name;
-        this.setState({
-            [name]: event.target.value,
-            hasError: false
-        })
-    }
+    const style = hasError ? { visibility: 'visible' } : { visibility: 'hidden' };
 
-    handleKeyPress = (event) => {
-        if (event.which === 13) {
-            this.submit(event);
-        }
-    }
-
-    render() {
-        const { hasError, success } = this.state;
-
-        if (isLoggedIn()) {
-            return <Redirect from="/login" to="/dashboard" />
-        }
-
-        const style = hasError ? { visibility: 'visible' } : { visibility: 'hidden'};
-
-        return (
-           <FormContainer>
-                <div>
-                    <TextField
-                        hintText="user name"
-                        onChange={(event) => this.onChange(event)}
-                        name="userName" 
-                        value={this.state.userName}
-                        onKeyPress={this.handleKeyPress}
-                        />
-                </div>
-                <div>
-                    <TextField
-                        type="password"
-                        hintText="password"
-                        onChange={(event) => this.onChange(event)}
-                        name="password"
-                        value={this.state.password}
-                        onKeyPress={this.handleKeyPress} />
-                </div>
-                <div>
-                    <RaisedButton
-                        label="login"
-                        onClick={this.submit}
-                        primary={true} />
-                </div>
-                <ErrorMessage style={style}>
+    return (
+      <FormContainer>
+        <div>
+              <TextField
+                hintText="user name"
+                onChange={event => this.onChange(event)}
+                name="userName"
+                value={this.state.userName}
+                onKeyPress={this.handleKeyPress}
+              />
+        </div>
+            <div>
+              <TextField
+                type="password"
+                hintText="password"
+                onChange={event => this.onChange(event)}
+                name="password"
+                value={this.state.password}
+                onKeyPress={this.handleKeyPress}
+              />
+            </div>
+            <div>
+              <RaisedButton
+                label="login"
+                onClick={this.submit}
+                primary
+              />
+            </div>
+            <ErrorMessage style={style}>
                     user name or password are incorrect
-                </ErrorMessage>
-           </FormContainer>
-           
-        );
-    }
+            </ErrorMessage>
+      </FormContainer>
+    );
+  }
 }
-
 
 export default LoginForm;
