@@ -1,5 +1,7 @@
+import 'whatwg-fetch';
+
 const isLoggedIn = () => {
-    const token = localStorage.getItem('token');
+    const token = window.localStorage.getItem('token');
     return token !== null;
 }
 
@@ -9,9 +11,9 @@ const checkCredentials = async (userName, password) => {
     // if debugging mode than set to local url
     const debug = true;
     if (debug) {
-      url = 'http://localhost:777/credentials'
+        url = 'http://localhost:777/credentials'
     } else {
-      url = '';
+        url = '';
     }
 
     const headers = new Headers();
@@ -20,20 +22,19 @@ const checkCredentials = async (userName, password) => {
     const params = `user=${userName}&password=${password}`;
 
     const response = await fetch(url, {
-      method: 'POST',
-      // mode: 'cors',
-      headers,
-      body: params
+        method: 'POST',
+        // mode: 'cors',
+        headers,
+        body: params
     })
 
     if (!response.ok) {
-      // console.error('response not ok from server');
-      return false;
+        return false;
     }
 
     const result = await response.json();
     return !result.hasError;
-  }
+}
 
 export {
     isLoggedIn,

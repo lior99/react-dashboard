@@ -1,25 +1,28 @@
 import React, { Component } from 'react';
 import CircularProgressbar from 'react-circular-progressbar';
 import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
-import { setInterval } from 'timers';
 
 class CircularProgressContainer extends Component {
-    state = {
-        isButtonDisabled: false,
-        currentStageIndex: 0,
-        percentageArray : [0, 15, 27, 35, 60, 72, 93, 100],
-        maxIndex: 7,
+    constructor() {
+        super();
+        this.simulateCircularProcess = this.simulateCircularProcess.bind(this);
+
+        this.state = {
+            isButtonDisabled: false,
+            currentStageIndex: 0,
+            percentageArray: [0, 15, 27, 35, 60, 72, 93, 100],
+            maxIndex: 7,
+        }
     }
 
-    simulateCircularProcess = () => {
+    simulateCircularProcess() {
         this.setState({
             isButtonDisabled: true,
             currentStageIndex: 0
         })
 
         const interval = window.setInterval(() => {
-            const { percent:currentPercent, currentStageIndex, maxIndex }  = this.state;
+            const { currentStageIndex, maxIndex } = this.state;
 
             if (currentStageIndex >= maxIndex) {
                 window.clearInterval(interval);
@@ -31,10 +34,9 @@ class CircularProgressContainer extends Component {
             }
 
             this.setState({
-                currentStageIndex : currentStageIndex + 1
+                currentStageIndex: currentStageIndex + 1
             })
         }, 1000);
-
     }
 
     render() {
@@ -48,8 +50,9 @@ class CircularProgressContainer extends Component {
                         <RaisedButton
                             onClick={this.simulateCircularProcess}
                             label="Simulate"
-                            primary={true} 
-                            disabled={this.state.isButtonDisabled}/>
+                            primary
+                            disabled={this.state.isButtonDisabled}
+                        />
                     </div>
                     <div>
                         <CircularProgressbar percentage={percentageArray[currentStageIndex]} />
