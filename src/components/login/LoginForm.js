@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
 import 'whatwg-fetch';
-import { isLoggedIn } from '../../utils';
+import { isLoggedIn, checkCredentials } from '../../utils';
 
 const ErrorMessage = styled.div`
     margin-top: 10px;
@@ -28,7 +28,6 @@ class LoginForm extends React.Component {
     super();
 
     this.submit = this.submit.bind(this);
-    this.checkCredentials = this.checkCredentials.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
 
     this.state = {
@@ -49,7 +48,7 @@ class LoginForm extends React.Component {
   async submit(event) {
     event.preventDefault();
     const { userName, password } = this.state;
-    const isValid = await this.checkCredentials(userName, password);
+    const isValid = await checkCredentials(userName, password);
     if (!isValid) {
       this.setState({
         hasError: true
@@ -61,38 +60,6 @@ class LoginForm extends React.Component {
         hasError: false,
       })
     }
-  }
-
-  async checkCredentials(userName, password) {
-    let url = '';
-
-    // if debugging mode than set to local url
-    const debug = true;
-    if (debug) {
-      url = 'http://localhost:777/credentials'
-    } else {
-      url = '';
-    }
-
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
-
-    const params = `user=${userName}&password=${password}`;
-
-    const response = await fetch(url, {
-      method: 'POST',
-      // mode: 'cors',
-      headers,
-      body: params
-    })
-
-    if (!response.ok) {
-      // console.error('response not ok from server');
-      return false;
-    }
-
-    const result = await response.json();
-    return !result.hasError;
   }
 
   handleKeyPress(event) {
